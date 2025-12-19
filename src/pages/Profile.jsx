@@ -15,6 +15,8 @@ export default function Profile({ user, onLogout }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [selectedPhoto, setSelectedPhoto] = useState(null);
+  const [photoPreview, setPhotoPreview] = useState(null);
 
   const profile = useMemo(() => {
     const name = user?.user_metadata?.nickname || user?.user_metadata?.name || "Хөрөнгө оруулагч";
@@ -63,7 +65,7 @@ export default function Profile({ user, onLogout }) {
       contact: email,
     };
 
-    const photo = user?.photo || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRUuR6lY1HPFS4Q_R2A5r70ECdchXmR_n1b8g&s";
+    const photo = user?.user_metadata?.photo || "/img/logo.png";
 
     return {
       name,
@@ -111,6 +113,27 @@ export default function Profile({ user, onLogout }) {
     setSuccess("");
 
     try {
+      let photoUrl = profile.photo;
+
+      // Upload photo if selected
+      if (selectedPhoto) {
+        const fileExt = selectedPhoto.name.split('.').pop();
+        const fileName = `${user.id}-${Date.now()}.${fileExt}`;
+        
+        // For now, convert to base64 and store in metadata
+        // TODO: Set up Supabase Storage bucket 'profile-photos'
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const base64String = reader.result;
+          photoUrl = base64String;
+        };
+        reader.readAsDataURL(selectedPhoto);
+        
+        // Wait for conversion to complete
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
+
+      // Update user metadata with photo URL
       const { data, error } = await supabase.auth.updateUser({
         data: {
           name: editForm.name,
@@ -124,6 +147,7 @@ export default function Profile({ user, onLogout }) {
           experience: editForm.experience,
           investmentRange: editForm.investmentRange,
           focus: editForm.focus,
+          photo: photoUrl,
         },
       });
 
@@ -131,6 +155,8 @@ export default function Profile({ user, onLogout }) {
 
       setSuccess("Профайл амжилттай шинэчлэгдлээ!");
       setIsEditing(false);
+      setSelectedPhoto(null);
+      setPhotoPreview(null);
       
       // Trigger a refresh of the user data
       window.location.reload();
@@ -146,6 +172,23 @@ export default function Profile({ user, onLogout }) {
       ...prev,
       [field]: e.target.value
     }));
+  };
+
+  const handlePhotoChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedPhoto(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPhotoPreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handlePhotoRemove = () => {
+    setSelectedPhoto(null);
+    setPhotoPreview(null);
   };
 
   return (
@@ -240,6 +283,36 @@ export default function Profile({ user, onLogout }) {
             {success && <div className="success-message">{success}</div>}
             
             <div className="edit-form-grid">
+              <div className="edit-form-group full-width">
+                <label>Профайл зураг</label>
+                <div className="photo-upload-container">
+                  <div className="photo-preview">
+                    <img 
+                      src={photoPreview || profile.photo} 
+                      alt="Profile preview" 
+                      className="photo-preview-img"
+                    />
+                  </div>
+                  <div className="photo-upload-controls">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handlePhotoChange}
+                      className="photo-input"
+                      id="photo-upload"
+                    />
+                    <label htmlFor="photo-upload" className="photo-upload-btn">
+                      Зураг сонгох
+                    </label>
+                    {photoPreview && (
+                      <button type="button" onClick={handlePhotoRemove} className="photo-remove-btn">
+                        Устгах
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+              
               <div className="edit-form-group">
                 <label>Нэр</label>
                 <input 

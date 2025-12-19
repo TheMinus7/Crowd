@@ -51,6 +51,30 @@ main {
   display: flex;
   gap: 50px;
   align-items: center;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.logo-link {
+  display: flex;
+  align-items: center;
+}
+
+.logo-img {
+  height: 50px;
+  width: auto;
+  border-radius: 8px;
+  transition: transform 0.2s ease;
+}
+
+.logo-img:hover {
+  transform: scale(1.05);
+}
+
+.nav-items {
+  display: flex;
+  gap: 50px;
+  align-items: center;
 }
 
 .nav-link {
@@ -980,6 +1004,69 @@ main {
   border-radius: 8px;
   font-size: 13px;
   margin-bottom: 12px;
+}
+
+/* Photo Upload Styles */
+.photo-upload-container {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.photo-preview {
+  flex-shrink: 0;
+}
+
+.photo-preview-img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #e5e7eb;
+}
+
+.photo-upload-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.photo-input {
+  display: none;
+}
+
+.photo-upload-btn {
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  display: inline-block;
+  text-align: center;
+}
+
+.photo-upload-btn:hover {
+  background: #1d4ed8;
+}
+
+.photo-remove-btn {
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.photo-remove-btn:hover {
+  background: #dc2626;
 }
 
 .form-group {
