@@ -57,7 +57,7 @@ export default function Profile({ user, onLogout }) {
       contact: email,
     };
 
-    const photo = user?.photo || "img/in1.png";
+    const photo = user?.photo || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRUuR6lY1HPFS4Q_R2A5r70ECdchXmR_n1b8g&s";
 
     return {
       name,
