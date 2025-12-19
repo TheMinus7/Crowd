@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import supabase from "../utils/supabaseClient";
 
 const TABS = [
   { key: "about", label: "Тухай" },
@@ -9,18 +10,23 @@ const TABS = [
 
 export default function Profile({ user, onLogout }) {
   const [tab, setTab] = useState("about");
+  const [isEditing, setIsEditing] = useState(false);
+  const [editForm, setEditForm] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   const profile = useMemo(() => {
-    const name = user?.nickname || user?.name || "Хөрөнгө оруулагч";
+    const name = user?.user_metadata?.nickname || user?.user_metadata?.name || "Хөрөнгө оруулагч";
     const email = user?.email || "munkhjargal.must@gmail.com";
-    const age = user?.age ? String(user.age) : "";
-    const location = user?.location || "Ulaanbaatar, Mongolia";
+    const age = user?.user_metadata?.age ? String(user.age) : "";
+    const location = user?.user_metadata?.location || "Ulaanbaatar, Mongolia";
     const role = user?.role || "Investor";
     const headline =
-      user?.headline ||
+      user?.user_metadata?.headline ||
       "Төсөл бүрийн үнэ цэнийг бодит өгөгдөл, ил тод тайлан дээр тулгуурлан үнэлнэ.";
     const bio =
-      user?.bio ||
+      user?.user_metadata?.bio ||
       "Crowd MGL дээр бодит төслүүдийг дэмжиж, урт хугацааны хамтын ажиллагааг бий болгох зорилготой.";
 
     const about = {
@@ -49,8 +55,8 @@ export default function Profile({ user, onLogout }) {
           ];
 
     const basics = {
-      company: user?.company || "Тэнгэр Жаргалант Ложистик ХХК",
-      position: user?.position || "Гүйцэтгэх захирал",
+      company: user?.user_metadata?.company || "Тэнгэр Жаргалант Ложистик ХХК",
+      position: user?.user_metadata?.position || "Гүйцэтгэх захирал",
       experience: user?.experience || "7 жил",
       investmentRange: user?.investmentRange || "5,000,000₮ – 100,000,000₮",
       focus: user?.focus || "Зуучлал, ложистик, импорт-экспорт",
@@ -74,6 +80,74 @@ export default function Profile({ user, onLogout }) {
     };
   }, [user]);
 
+  const handleEdit = () => {
+    setIsEditing(true);
+    setError("");
+    setSuccess("");
+    setEditForm({
+      name: profile.name,
+      age: profile.age,
+      location: profile.location,
+      headline: profile.headline,
+      bio: profile.bio,
+      company: profile.basics.company,
+      position: profile.basics.position,
+      experience: profile.basics.experience,
+      investmentRange: profile.basics.investmentRange,
+      focus: profile.basics.focus,
+    });
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+    setEditForm({});
+    setError("");
+    setSuccess("");
+  };
+
+  const handleSave = async () => {
+    setLoading(true);
+    setError("");
+    setSuccess("");
+
+    try {
+      const { data, error } = await supabase.auth.updateUser({
+        data: {
+          name: editForm.name,
+          nickname: editForm.name,
+          age: editForm.age,
+          location: editForm.location,
+          headline: editForm.headline,
+          bio: editForm.bio,
+          company: editForm.company,
+          position: editForm.position,
+          experience: editForm.experience,
+          investmentRange: editForm.investmentRange,
+          focus: editForm.focus,
+        },
+      });
+
+      if (error) throw error;
+
+      setSuccess("Профайл амжилттай шинэчлэгдлээ!");
+      setIsEditing(false);
+      
+      // Trigger a refresh of the user data
+      window.location.reload();
+    } catch (err) {
+      setError(err?.message || "Профайл шинэчлэхэд алдаа гарлаа.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleInputChange = (field) => (e) => {
+    setEditForm(prev => ({
+      ...prev,
+      [field]: e.target.value
+    }));
+  };
+
   return (
     <main className="profile-page">
       <section className="profile-shell">
@@ -86,9 +160,29 @@ export default function Profile({ user, onLogout }) {
           </div>
 
           <div className="profile-top-actions">
-            <button className="profile-edit-btn" type="button">
-              Засах
-            </button>
+            {!isEditing ? (
+              <button className="profile-edit-btn" type="button" onClick={handleEdit}>
+                Засах
+              </button>
+            ) : (
+              <div className="profile-edit-actions">
+                <button 
+                  className="profile-save-btn" 
+                  type="button" 
+                  onClick={handleSave}
+                  disabled={loading}
+                >
+                  {loading ? "Хадгалж байна..." : "Хадгалах"}
+                </button>
+                <button 
+                  className="profile-cancel-btn" 
+                  type="button" 
+                  onClick={handleCancel}
+                >
+                  Цуцлах
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
@@ -136,6 +230,88 @@ export default function Profile({ user, onLogout }) {
             </div>
           </div>
         </div>
+
+        {/* Edit Form */}
+        {isEditing && (
+          <div className="profile-edit-form">
+            <h3 className="edit-form-title">Профайл засварлах</h3>
+            
+            {error && <div className="error-message">{error}</div>}
+            {success && <div className="success-message">{success}</div>}
+            
+            <div className="edit-form-grid">
+              <div className="edit-form-group">
+                <label>Нэр</label>
+                <input 
+                  type="text" 
+                  value={editForm.name || ''} 
+                  onChange={handleInputChange('name')}
+                  className="edit-input"
+                />
+              </div>
+              
+              <div className="edit-form-group">
+                <label>Нас</label>
+                <input 
+                  type="text" 
+                  value={editForm.age || ''} 
+                  onChange={handleInputChange('age')}
+                  className="edit-input"
+                />
+              </div>
+              
+              <div className="edit-form-group">
+                <label>Байршил</label>
+                <input 
+                  type="text" 
+                  value={editForm.location || ''} 
+                  onChange={handleInputChange('location')}
+                  className="edit-input"
+                />
+              </div>
+              
+              <div className="edit-form-group full-width">
+                <label>Гарчиг (Investor Title)</label>
+                <input 
+                  type="text" 
+                  value={editForm.headline || ''} 
+                  onChange={handleInputChange('headline')}
+                  className="edit-input"
+                />
+              </div>
+              
+              <div className="edit-form-group full-width">
+                <label>Тухай (Bio)</label>
+                <textarea 
+                  value={editForm.bio || ''} 
+                  onChange={handleInputChange('bio')}
+                  className="edit-textarea"
+                  rows={3}
+                />
+              </div>
+              
+              <div className="edit-form-group">
+                <label>Компани</label>
+                <input 
+                  type="text" 
+                  value={editForm.company || ''} 
+                  onChange={handleInputChange('company')}
+                  className="edit-input"
+                />
+              </div>
+              
+              <div className="edit-form-group">
+                <label>Албан тушаал</label>
+                <input 
+                  type="text" 
+                  value={editForm.position || ''} 
+                  onChange={handleInputChange('position')}
+                  className="edit-input"
+                />
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="profile-tabs">
           {TABS.map((t) => (

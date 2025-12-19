@@ -96,7 +96,7 @@ function App() {
               <Route path="/partnership" element={<Partnership />} />
               <Route
                 path="/profile"
-                element={<Profile user={userProfile} onLogout={handleLogout} />}
+                element={<Profile user={session?.user} onLogout={handleLogout} />}
               />
               <Route path="*" element={<Navigate to="/" replace />} />
             </>
