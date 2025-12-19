@@ -1006,69 +1006,6 @@ main {
   margin-bottom: 12px;
 }
 
-/* Photo Upload Styles */
-.photo-upload-container {
-  display: flex;
-  gap: 16px;
-  align-items: center;
-}
-
-.photo-preview {
-  flex-shrink: 0;
-}
-
-.photo-preview-img {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 3px solid #e5e7eb;
-}
-
-.photo-upload-controls {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.photo-input {
-  display: none;
-}
-
-.photo-upload-btn {
-  background: #2563eb;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 8px 16px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.15s ease;
-  display: inline-block;
-  text-align: center;
-}
-
-.photo-upload-btn:hover {
-  background: #1d4ed8;
-}
-
-.photo-remove-btn {
-  background: #ef4444;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 6px 12px;
-  font-size: 12px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.15s ease;
-}
-
-.photo-remove-btn:hover {
-  background: #dc2626;
-}
-
 .form-group {
   display: flex;
   flex-direction: column;
