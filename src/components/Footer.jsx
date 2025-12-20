@@ -16,7 +16,7 @@ export default function Footer() {
         <div className="footer-founders">
           <div className="footer-founders-title">Үүсгэн байгуулагчид</div>
           <div className="footer-founders-names">
-            А. Мөнхжаргал · Доржрагчаа · Дуламсүрэн
+            The Minus
           </div>
         </div>
 
