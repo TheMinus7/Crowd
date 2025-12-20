@@ -38,9 +38,9 @@ export default function Investor() {
       },
       {
         id: 3,
-        name: "Доржрагчаа",
-        role: "Developer",
-        img: "/img/doja.png",
+        name: "Elon Musk",
+        role: "Tesla Ceo",
+        img: "https://images.ft.com/v3/image/raw/ftcms%3A69a2a6ab-1977-4b75-81a9-7165488abeb8?source=next-article&fit=scale-down&quality=highest&width=1440&dpr=1",
         about:
           "Стратегийн түншлэл, байгууллагын хамтын ажиллагааг зохион байгуулж төслүүдийг бодит өсөлтөд хүргэх суурийг тавина.",
         bullets: [
@@ -51,9 +51,9 @@ export default function Investor() {
       },
       {
         id: 4,
-        name: "Дуламсүрэн",
-        role: "Developer",
-        img: "/img/duya.png",
+        name: "Johnny Depp",
+        role: "Actor",
+        img: "https://m.media-amazon.com/images/M/MV5BZjA3NzZiZDktZjc2My00MzY2LThhOWMtZGFjYzg4ZDI2ZWVmXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
         about:
           "Төсөл бүрийн үнэ цэнэ, нөлөөллийг олон нийтэд ойлгомжтой байдлаар хүргэж, итгэлцэл бий болгох контент хөгжүүлнэ.",
         bullets: [
